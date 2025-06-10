@@ -9,6 +9,20 @@ import model
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing import image
 
+@st.cache_resource
+def load_fundus_model():
+    model = load_model("fundus_verifier.h5")  # or "models/fundus_verifier.h5"
+    return model
+
+fundus_model = load_fundus_model()
+
+def verify_fundus(img):
+    img = img.resize((224, 224)).convert('RGB')
+    img_array = image.img_to_array(img)
+    img_array = np.expand_dims(img_array, axis=0) / 255.0
+    pred = fundus_model.predict(img_array)[0][0]
+    return pred >= 0.5
+
 # Set page configuration
 st.set_page_config(
     page_title="Khaire Health - Retinal Analyzer",
@@ -53,10 +67,17 @@ with col1:
     if uploaded_file is not None:
         try:
             # Read and display the image
-            image = Image.open(uploaded_file)
-            st.session_state.uploaded_image = image
-            st.image(image, caption="Uploaded Image", use_column_width=True)
+            img = Image.open(uploaded_file)
+
+            if not verify_fundus(img):
+                st.error("❌ Not a valid fundus photo. Please upload a clear image.")
+                st.stop()
             
+            st.success("✔️ Fundus image verified. Proceeding with diagnosis...")
+                    image = Image.open(uploaded_file)
+                    st.session_state.uploaded_image = image
+                    st.image(image, caption="Uploaded Image", use_column_width=True)
+                    
             # Process image button
             if st.button("Analyze Image"):
                 with st.spinner("Processing image..."):
