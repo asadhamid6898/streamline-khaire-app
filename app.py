@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import io
-from PIL import Image
+from Pillow import Image
 import time
 import utils
 import model
