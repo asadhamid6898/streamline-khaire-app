@@ -66,32 +66,32 @@ with col1:
     # If an image is uploaded
     if uploaded_file is not None:
         try:
-        # Read and display the image
-        img = Image.open(uploaded_file)
-
-        if not verify_fundus(img):
-            st.error("❌ Not a valid fundus photo. Please upload a clear image.")
-            st.stop()
-        
-        st.success("✔️ Fundus image verified. Proceeding with diagnosis...")
-        image = Image.open(uploaded_file)
-        st.session_state.uploaded_image = image
-        st.image(image, caption="Uploaded Image", use_column_width=True)
-        
-        # Process image button
-        if st.button("Analyze Image"):
-            with st.spinner("Processing image..."):
-                # Preprocess the image
-                processed_img = utils.preprocess_image(st.session_state.uploaded_image)
-                st.session_state.processed_image = processed_img
-                
-                # Get predictions from model
-                results = model.predict_health_conditions(processed_img)
-                st.session_state.analysis_results = results
-                st.session_state.show_results = True
-                st.success("Analysis complete!")
-                st.rerun()
+            # Read and display the image
+            img = Image.open(uploaded_file)
     
+            if not verify_fundus(img):
+                st.error("❌ Not a valid fundus photo. Please upload a clear image.")
+                st.stop()
+            
+            st.success("✔️ Fundus image verified. Proceeding with diagnosis...")
+            image = Image.open(uploaded_file)
+            st.session_state.uploaded_image = image
+            st.image(image, caption="Uploaded Image", use_column_width=True)
+            
+            # Process image button
+            if st.button("Analyze Image"):
+                with st.spinner("Processing image..."):
+                    # Preprocess the image
+                    processed_img = utils.preprocess_image(st.session_state.uploaded_image)
+                    st.session_state.processed_image = processed_img
+                    
+                    # Get predictions from model
+                    results = model.predict_health_conditions(processed_img)
+                    st.session_state.analysis_results = results
+                    st.session_state.show_results = True
+                    st.success("Analysis complete!")
+                    st.rerun()
+        
         except Exception as e:
             st.error(f"Error processing image: {e}")
             st.session_state.uploaded_image = None
