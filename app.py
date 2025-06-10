@@ -21,7 +21,7 @@ def verify_fundus(img):
     img_array = image.img_to_array(img)
     img_array = np.expand_dims(img_array, axis=0) / 255.0
     pred = fundus_model.predict(img_array)[0][0]
-    return pred >= 0.5
+    return bool(pred >= 0.5)
 
 # Set page configuration
 st.set_page_config(
@@ -74,15 +74,15 @@ with col1:
             st.stop()
         
         st.success("✔️ Fundus image verified. Proceeding with diagnosis...")
-                image = Image.open(uploaded_file)
-                st.session_state.uploaded_image = image
-                st.image(image, caption="Uploaded Image", use_column_width=True)
-                
+        image = Image.open(uploaded_file)
+        st.session_state.uploaded_image = image
+        st.image(image, caption="Uploaded Image", use_column_width=True)
+        
         # Process image button
         if st.button("Analyze Image"):
             with st.spinner("Processing image..."):
                 # Preprocess the image
-                processed_img = utils.preprocess_image(image)
+                processed_img = utils.preprocess_image(st.session_state.uploaded_image)
                 st.session_state.processed_image = processed_img
                 
                 # Get predictions from model
@@ -151,8 +151,8 @@ with col2:
             diabetes_confidence = diabetes.get("confidence", 0)
             
             # Use proper float value for progress bar (0.0 to 1.0)
-            st.progress(float(diabetes_confidence)/100.0, text=f"Confidence: {diabetes_confidence:.1f}%")
-            st.markdown(f"**Risk Level**: {diabetes_risk}")
+            st.progress(float(diabetes_confidence) / 100.0)
+            st.markdown(f"Confidence: {diabetes_confidence:.1f}%")
             
             # Blood pressure
             st.markdown("#### Blood Pressure Indicators")
