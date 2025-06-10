@@ -1,10 +1,13 @@
 import numpy as np
 from PIL import Image
+from tensorflow.keras.models import load_model
+from tensorflow.keras.preprocessing.image import load_img, img_to_array
 import io
 import time
 import random
 import os
 from roi_detector import ROIDetector
+import 
 
 def predict_health_conditions(image):
     """
@@ -149,10 +152,7 @@ def is_fundus_image(image):
     Returns:
         bool: True if image appears to be a valid fundus image
     """
-    # In a real implementation, this would use a simple classifier to verify
-    # if the image contains a retinal fundus
-    
-    # For now, we'll do basic checks
+    # Start with basic checks
     width, height = image.size
     
     # Check if the image is roughly square (most fundus images are)
@@ -164,7 +164,11 @@ def is_fundus_image(image):
     if width < 200 or height < 200:
         return False
     
-    # In a real implementation, we'd run a simple ML model to check
+    # Load the saved model
+    model = load_model("fundus_classifier.keras")
+    
+    # Compile the model after loading
+    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
     # if this is actually a fundus image
     
     return True
