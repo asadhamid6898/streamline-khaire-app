@@ -1,7 +1,7 @@
 numpy
 pandas
-PIL
+Pillow
 streamlit
 plotly
 os
-tensorflow
+tensorflow==2.15.0
